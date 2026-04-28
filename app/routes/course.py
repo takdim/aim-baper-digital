@@ -1,8 +1,9 @@
 from flask import render_template, request, redirect, url_for, flash, send_file
 from flask_login import current_user
 from app.routes import course_bp
-from app.models import db, Course, StudentCourse, Material, StudentEvaluation, Evaluation, VisitProof, Certificate, User
+from app.models import db, Course, StudentCourse, Material, StudentEvaluation, Evaluation, VisitProof, Certificate, User, CertificateTemplate
 from app.utils.decorators import student_required
+from app.utils import generate_certificate_bytes, find_certificate_template
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
@@ -327,7 +328,7 @@ def upload_visit_proof(course_id):
 @course_bp.route('/<int:course_id>/download-certificate')
 @student_required
 def download_certificate(course_id):
-    """Download sertifikat (hanya jika sudah verified)"""
+    """Download sertifikat (hanya jika sudah verified) - generated on-the-fly"""
     course = Course.query.get_or_404(course_id)
     
     # Check enrollment
@@ -350,36 +351,61 @@ def download_certificate(course_id):
         flash('Bukti kunjungan Anda belum diverifikasi oleh admin', 'danger')
         return redirect(url_for('course.view', course_id=course_id))
     
-    # Check or create certificate
+    # Get certificate template settings
+    cert_template = CertificateTemplate.query.filter_by(course_id=course_id).first()
+    if not cert_template:
+        flash('Sertifikat belum dikonfigurasi untuk course ini', 'danger')
+        return redirect(url_for('course.view', course_id=course_id))
+    
+    # Generate certificate number
+    certificate_number = cert_template.get_next_certificate_number()
+    
+    # Find template JPEG
+    template_jpeg = find_certificate_template(course_id)
+    if not template_jpeg:
+        flash('Template sertifikat tidak ditemukan', 'danger')
+        return redirect(url_for('course.view', course_id=course_id))
+    
+    # Generate certificate PDF in memory
+    pdf_bytes = generate_certificate_bytes(
+        student_name=current_user.name,
+        certificate_number=certificate_number,
+        template_path=template_jpeg,
+        head_name=cert_template.head_name,
+        head_nip=cert_template.head_nip,
+        head_title=cert_template.head_title,
+        institution_name=cert_template.institution_name,
+        institution_npp=cert_template.institution_npp,
+        year=cert_template.year
+    )
+    
+    if not pdf_bytes:
+        flash('Gagal generate sertifikat', 'danger')
+        return redirect(url_for('course.view', course_id=course_id))
+    
+    # Save to database for audit trail (optional)
     certificate = Certificate.query.filter_by(
         student_id=current_user.id,
         course_id=course_id
     ).first()
     
     if not certificate:
-        # Create certificate
-        cert_folder = Path('app/static/uploads/certificates')
-        cert_folder.mkdir(parents=True, exist_ok=True)
-        
-        cert_filename = f"cert_{current_user.id}_{course_id}_{datetime.utcnow().timestamp()}.pdf"
-        cert_path = f"uploads/certificates/{cert_filename}"
-        
         certificate = Certificate(
             student_id=current_user.id,
             course_id=course_id,
-            certificate_path=cert_path
+            certificate_path=f"sertifikat_{current_user.id}_{course_id}_{certificate_number}",
+            issued_at=datetime.utcnow()
         )
         db.session.add(certificate)
-        db.session.commit()
     
-    # Update download timestamp
     certificate.downloaded_at = datetime.utcnow()
     db.session.commit()
     
-    # For now, return the certificate path (you can implement actual PDF generation later)
-    cert_file = Path(f"app/static/{certificate.certificate_path}")
-    if cert_file.exists():
-        return send_file(cert_file, as_attachment=True, download_name=f"sertifikat_{current_user.username}_{course.title.replace(' ', '_')}.pdf")
-    
-    flash('Sertifikat tidak ditemukan', 'danger')
-    return redirect(url_for('course.view', course_id=course_id))
+    # Stream PDF directly to client
+    filename = f"sertifikat_{current_user.name.replace(' ', '_')}_{course.title.replace(' ', '_')}.pdf"
+    return send_file(
+        pdf_bytes,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=filename
+    )

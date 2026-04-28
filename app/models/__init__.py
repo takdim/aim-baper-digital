@@ -10,6 +10,7 @@ from app.models.evaluation import Evaluation
 from app.models.student_evaluation import StudentEvaluation
 from app.models.visit_proof import VisitProof
 from app.models.certificate import Certificate
+from app.models.certificate_template import CertificateTemplate
 
 __all__ = [
     'db',
@@ -20,5 +21,6 @@ __all__ = [
     'Evaluation',
     'StudentEvaluation',
     'VisitProof',
-    'Certificate'
+    'Certificate',
+    'CertificateTemplate',
 ]

@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user
 from app.routes import admin_bp
-from app.models import db, User, Course, Material, Evaluation, VisitProof, StudentCourse, Certificate
+from app.models import db, User, Course, Material, Evaluation, VisitProof, StudentCourse, Certificate, CertificateTemplate
 from app.utils.decorators import admin_required, role_home
 from datetime import datetime
 
@@ -471,6 +471,57 @@ def reject_proof(proof_id):
     
     flash(f'Bukti kunjungan dari {proof.student.name} ditolak', 'warning')
     return redirect(url_for('admin.course_proofs', course_id=course_id))
+
+# ==================== CERTIFICATE TEMPLATE ====================
+@admin_bp.route('/courses/<int:course_id>/certificate')
+@admin_required
+def certificate_settings(course_id):
+    """Kelola template sertifikat per course"""
+    course = Course.query.get_or_404(course_id)
+    
+    # Get or create certificate template
+    cert_template = CertificateTemplate.query.filter_by(course_id=course_id).first()
+    
+    if not cert_template:
+        cert_template = CertificateTemplate(
+            course_id=course_id,
+            certificate_number_format=f'{{year}}/UN4.1.1.5/TA.01.02/{{seq}}',
+            year=datetime.utcnow().year,
+            head_name='Prof. Dr. Nama Kepala',
+            head_nip='197105101998031234',
+        )
+        db.session.add(cert_template)
+        db.session.commit()
+    
+    return render_template('admin/certificate_settings.html', course=course, cert_template=cert_template)
+
+@admin_bp.route('/certificates/<int:cert_id>/update', methods=['POST'])
+@admin_required
+def update_certificate_settings(cert_id):
+    """Update sertifikat settings"""
+    cert = CertificateTemplate.query.get_or_404(cert_id)
+    course_id = cert.course_id
+    
+    cert.certificate_number_format = (request.form.get('number_format') or '').strip()
+    cert.year = int(request.form.get('year') or datetime.utcnow().year)
+    cert.current_sequence = int(request.form.get('current_sequence') or 0)
+    cert.head_name = (request.form.get('head_name') or '').strip()
+    cert.head_nip = (request.form.get('head_nip') or '').strip()
+    cert.head_title = (request.form.get('head_title') or 'Kepala Perpustakaan').strip()
+    cert.institution_name = (request.form.get('institution_name') or '').strip()
+    cert.institution_npp = (request.form.get('institution_npp') or '').strip()
+    
+    if not cert.certificate_number_format:
+        flash('Format nomor sertifikat harus diisi', 'danger')
+        return redirect(url_for('admin.certificate_settings', course_id=course_id))
+    
+    if not cert.head_name or not cert.head_nip:
+        flash('Nama dan NIP kepala perpustakaan harus diisi', 'danger')
+        return redirect(url_for('admin.certificate_settings', course_id=course_id))
+    
+    db.session.commit()
+    flash('Settings sertifikat berhasil diupdate', 'success')
+    return redirect(url_for('admin.certificate_settings', course_id=course_id))
 
 # ==================== ADMIN LOGIN ====================
 @admin_bp.route('/login', methods=['GET', 'POST'])

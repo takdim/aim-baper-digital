@@ -10,6 +10,9 @@
             <p style="color: #666; margin: 0;">{{ course.title }} <strong style="color: #1a3a5c;">→</strong> Materi dan evaluasi untuk mahasiswa</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ url_for('admin.certificate_settings', course_id=course.id) }}" style="background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-certificate"></i> Sertifikat
+            </a>
             <a href="{{ url_for('admin.course_proofs', course_id=course.id) }}" style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s;">
                 <i class="fas fa-images"></i> Verifikasi Bukti
             </a>
