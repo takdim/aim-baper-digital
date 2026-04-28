@@ -4,6 +4,26 @@ from app.routes import auth_bp
 from app.models import db, User
 from app.utils.decorators import role_home
 
+FACULTY_OPTIONS = [
+    "Fakultas Ekonomi dan Bisnis",
+    "Fakultas Hukum",
+    "Fakultas Kedokteran",
+    "Fakultas Teknik",
+    "Fakultas Ilmu Budaya",
+    "Fakultas Pertanian",
+    "Fakultas Matematika dan Ilmu Pengetahuan Alam (MIPA)",
+    "Fakultas Ilmu Sosial dan Ilmu Politik (FISIP)",
+    "Fakultas Kedokteran Gigi",
+    "Fakultas Kesehatan Masyarakat",
+    "Fakultas Ilmu Kelautan dan Perikanan",
+    "Fakultas Kehutanan",
+    "Fakultas Peternakan",
+    "Fakultas Farmasi",
+    "Fakultas Keperawatan",
+    "Fakultas Vokasi",
+    "Sekolah Pascasarjana",
+]
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     """Register page untuk mahasiswa baru"""
@@ -25,6 +45,10 @@ def register():
         if password != password_confirm:
             flash('Password tidak cocok', 'danger')
             return redirect(url_for('auth.register'))
+
+        if faculty not in FACULTY_OPTIONS:
+            flash('Fakultas yang dipilih tidak valid', 'danger')
+            return redirect(url_for('auth.register'))
         
         if User.query.filter_by(nim=nim).first():
             flash('NIM sudah terdaftar', 'danger')
@@ -40,7 +64,7 @@ def register():
         flash('Registrasi berhasil! Silakan login', 'success')
         return redirect(url_for('auth.login'))
     
-    return render_template('auth/register.html')
+    return render_template('auth/register.html', faculty_options=FACULTY_OPTIONS)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():

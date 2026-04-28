@@ -30,15 +30,9 @@
                         <label for="faculty" class="form-label">Fakultas</label>
                         <select class="form-select form-select-lg" id="faculty" name="faculty" required>
                             <option value="">-- Pilih Fakultas --</option>
-                            <option value="Teknik Informatika">Teknik Informatika</option>
-                            <option value="Teknik Industri">Teknik Industri</option>
-                            <option value="Teknik Mesin">Teknik Mesin</option>
-                            <option value="Teknik Sipil">Teknik Sipil</option>
-                            <option value="Ekonomi">Ekonomi</option>
-                            <option value="Bisnis">Bisnis</option>
-                            <option value="Hukum">Hukum</option>
-                            <option value="Humaniora">Humaniora</option>
-                            <option value="Lainnya">Lainnya</option>
+                            {% for faculty in faculty_options %}
+                                <option value="{{ faculty }}">{{ faculty }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     
