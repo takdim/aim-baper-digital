@@ -1,0 +1,189 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Verifikasi Bukti Kunjungan - Admin{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #1a1a1a; margin-bottom: 8px;"><i class="fas fa-images" style="color: #1a3a5c; margin-right: 10px;"></i> Verifikasi Bukti Kunjungan</h1>
+            <p style="color: #666; margin: 0;"><strong style="color: #1a3a5c;">{{ course.title }}</strong></p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin.course_content', course_id=course.id) }}" style="background: transparent; color: #1a3a5c; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid #1a3a5c; cursor: pointer;">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+    <a href="{{ url_for('admin.course_proofs', course_id=course.id) }}" style="padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid rgba(26, 58, 92, 0.2); background: white; color: #1a3a5c;">
+        📊 Semua ({{ proofs|length }})
+    </a>
+    <a href="#" style="padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); color: #3B82F6;" onclick="filterStatus('pending'); return false;">
+        ⏳ Pending
+    </a>
+    <a href="#" style="padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.05); color: #22C55E;" onclick="filterStatus('approved'); return false;">
+        ✅ Disetujui
+    </a>
+    <a href="#" style="padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); color: #EF4444;" onclick="filterStatus('rejected'); return false;">
+        ❌ Ditolak
+    </a>
+</div>
+
+<!-- Proofs List -->
+{% if proofs %}
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        {% for proof in proofs %}
+            <div class="proof-card" data-status="{{ proof.status }}" style="background: white; border-radius: 16px; padding: 22px 24px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 240px;">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;">
+                            <strong style="color: #1a1a1a; font-size: 1rem;">{{ proof.student.name }}</strong>
+                            <span style="padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+                                {% if proof.status == 'pending' %}background: rgba(59, 130, 246, 0.12); color: #3B82F6;{% elif proof.status == 'approved' %}background: rgba(34, 197, 94, 0.12); color: #22C55E;{% else %}background: rgba(239, 68, 68, 0.12); color: #EF4444;{% endif %}">
+                                {% if proof.status == 'pending' %}⏳ Pending{% elif proof.status == 'approved' %}✅ Disetujui{% else %}❌ Ditolak{% endif %}
+                            </span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px;">
+                            <div style="background: rgba(26, 58, 92, 0.04); border-radius: 12px; padding: 12px 14px;">
+                                <small style="color: #999; display: block; margin-bottom: 4px;">Waktu Upload</small>
+                                <strong style="color: #1a3a5c; font-size: 0.9rem;">{{ proof.uploaded_at.strftime('%d %b %Y %H:%M') }}</strong>
+                            </div>
+                            <div style="background: rgba(26, 58, 92, 0.04); border-radius: 12px; padding: 12px 14px;">
+                                <small style="color: #999; display: block; margin-bottom: 4px;">Verifikator</small>
+                                <strong style="color: #1a1a1a; font-size: 0.9rem;">
+                                    {% if proof.status != 'pending' and proof.verifier %}
+                                        {{ proof.verifier.name }}{% if proof.verified_at %} • {{ proof.verified_at.strftime('%d %b %Y') }}{% endif %}
+                                    {% else %}
+                                        Belum diverifikasi
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </div>
+
+                        {% if proof.notes %}
+                            <div style="background: rgba(26, 58, 92, 0.05); padding: 12px 14px; border-radius: 12px; border-left: 4px solid #FFD700;">
+                                <small style="color: #666; display: block; font-weight: 600;">Catatan Admin</small>
+                                <p style="color: #666; margin: 4px 0 0 0; font-size: 13px;">{{ proof.notes }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px; width: 220px; max-width: 100%;">
+                        <button type="button" onclick='showProofModal({{ url_for("static", filename=proof.photo_path)|tojson }}, {{ proof.student.name|tojson }})' style="background: white; color: #1a3a5c; padding: 10px 16px; border-radius: 10px; border: 2px solid rgba(26, 58, 92, 0.2); font-weight: 600; cursor: pointer; font-size: 13px;">
+                            <i class="fas fa-eye"></i> Lihat Bukti
+                        </button>
+
+                        {% if proof.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('admin.approve_proof', proof_id=proof.id) }}" style="margin: 0;">
+                                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: white; padding: 10px 16px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-size: 13px;">
+                                    <i class="fas fa-check"></i> Setujui
+                                </button>
+                            </form>
+
+                            <button type="button" onclick="showRejectModal({{ proof.id }})" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; padding: 10px 16px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-size: 13px;">
+                                <i class="fas fa-times"></i> Tolak
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="background: linear-gradient(135deg, rgba(26, 58, 92, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%); border-radius: 16px; padding: 60px 40px; text-align: center; border: 2px solid rgba(26, 58, 92, 0.1);">
+        <i class="fas fa-inbox" style="font-size: 64px; color: #1a3a5c; opacity: 0.3; display: block; margin-bottom: 20px;"></i>
+        <h4 style="color: #1a3a5c; font-weight: 700; margin-bottom: 12px;">Tidak Ada Bukti Kunjungan</h4>
+        <p style="color: #666; margin-bottom: 0;">Belum ada mahasiswa yang upload bukti kunjungan untuk course ini.</p>
+    </div>
+{% endif %}
+
+<!-- Proof Preview Modal -->
+<div id="proofPreviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.72); z-index: 999; align-items: center; justify-content: center; padding: 24px;">
+    <div style="background: white; border-radius: 18px; width: min(920px, 100%); max-height: 92vh; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 22px; border-bottom: 1px solid rgba(26, 58, 92, 0.12);">
+            <div>
+                <strong id="proofPreviewTitle" style="color: #1a1a1a; font-size: 1rem;">Bukti Kunjungan</strong>
+                <p style="margin: 4px 0 0 0; color: #666; font-size: 13px;">Preview gambar upload mahasiswa</p>
+            </div>
+            <button type="button" onclick="closeProofModal()" style="background: transparent; border: none; color: #1a3a5c; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div style="background: #f4efe8; padding: 20px; text-align: center; overflow: auto; max-height: calc(92vh - 84px);">
+            <img id="proofPreviewImage" src="" alt="Preview bukti kunjungan" style="max-width: 100%; max-height: 72vh; border-radius: 14px; box-shadow: 0 12px 32px rgba(26, 58, 92, 0.16);">
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; padding: 32px; max-width: 400px; width: 90%;">
+        <h5 style="color: #1a1a1a; font-weight: 700; margin-bottom: 16px;">Alasan Penolakan</h5>
+        
+        <form id="rejectForm" method="POST" style="margin-bottom: 0;">
+            <textarea name="notes" placeholder="Jelaskan alasan penolakan..." rows="4" required style="width: 100%; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); border-radius: 10px; font-family: 'Segoe UI', sans-serif; resize: vertical; margin-bottom: 16px;"></textarea>
+            
+            <div style="display: flex; gap: 12px;">
+                <button type="button" onclick="closeRejectModal()" style="flex: 1; background: transparent; color: #1a3a5c; padding: 10px; border-radius: 10px; border: 2px solid #1a3a5c; font-weight: 600; cursor: pointer;">
+                    Batal
+                </button>
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; padding: 10px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer;">
+                    Tolak
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showProofModal(imageUrl, studentName) {
+        const modal = document.getElementById('proofPreviewModal');
+        const image = document.getElementById('proofPreviewImage');
+        const title = document.getElementById('proofPreviewTitle');
+        image.src = imageUrl;
+        title.textContent = `Bukti Kunjungan - ${studentName}`;
+        modal.style.display = 'flex';
+    }
+
+    function closeProofModal() {
+        const modal = document.getElementById('proofPreviewModal');
+        const image = document.getElementById('proofPreviewImage');
+        modal.style.display = 'none';
+        image.src = '';
+    }
+
+    function showRejectModal(proofId) {
+        const modal = document.getElementById('rejectModal');
+        const form = document.getElementById('rejectForm');
+        form.reset();
+        form.action = `{{ url_for('admin.reject_proof', proof_id=0) }}`.replace('0', proofId);
+        modal.style.display = 'flex';
+    }
+
+    function closeRejectModal() {
+        const modal = document.getElementById('rejectModal');
+        const form = document.getElementById('rejectForm');
+        form.reset();
+        modal.style.display = 'none';
+    }
+
+    function filterStatus(status) {
+        const cards = document.querySelectorAll('.proof-card');
+        cards.forEach(card => {
+            card.style.display = card.dataset.status === status ? 'block' : 'none';
+        });
+    }
+
+    // Close modal on outside click
+    document.getElementById('rejectModal').addEventListener('click', (e) => {
+        if (e.target.id === 'rejectModal') closeRejectModal();
+    });
+
+    document.getElementById('proofPreviewModal').addEventListener('click', (e) => {
+        if (e.target.id === 'proofPreviewModal') closeProofModal();
+    });
+</script>
+{% endblock %}

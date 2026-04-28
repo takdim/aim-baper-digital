@@ -1,0 +1,296 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Kelola Isi Course - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #1a1a1a; margin-bottom: 8px;"><i class="fas fa-layer-group" style="color: #1a3a5c; margin-right: 10px;"></i> Kelola Isi Course</h1>
+            <p style="color: #666; margin: 0;">{{ course.title }} <strong style="color: #1a3a5c;">→</strong> Materi dan evaluasi untuk mahasiswa</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ url_for('admin.course_proofs', course_id=course.id) }}" style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-images"></i> Verifikasi Bukti
+            </a>
+            <a href="{{ url_for('admin.edit_course', course_id=course.id) }}" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-edit"></i> Edit Course
+            </a>
+            <a href="{{ url_for('admin.courses_list') }}" style="background: transparent; color: #1a3a5c; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid #1a3a5c; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); margin-bottom: 20px;">
+            <div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-plus-circle"></i> Tambah Materi Baru
+            </div>
+            <form method="POST" action="{{ url_for('admin.create_material', course_id=course.id) }}">
+                <div class="mb-3">
+                    <label for="title" style="font-weight: 700; color: #1a3a5c; margin-bottom: 8px; display: block;">📚 Judul Materi</label>
+                    <input type="text" class="form-control" id="title" name="title" required placeholder="Contoh: Pengenalan Perpustakaan" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); transition: all 0.3s;">
+                </div>
+                <div class="mb-3">
+                    <label for="order" style="font-weight: 700; color: #1a3a5c; margin-bottom: 8px; display: block;">🔢 Urutan</label>
+                    <input type="number" min="1" class="form-control" id="order" name="order" placeholder="Otomatis jika dikosongkan" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); transition: all 0.3s;">
+                </div>
+                <div class="mb-3">
+                    <label for="content" style="font-weight: 700; color: #1a3a5c; margin-bottom: 8px; display: block;">✍️ Isi Materi</label>
+                    <textarea class="form-control" id="content" name="content" rows="9" required placeholder="Tulis isi materi di sini" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); transition: all 0.3s;"></textarea>
+                </div>
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-save"></i> Simpan Materi
+                </button>
+            </form>
+        </div>
+
+        {% if editing_material %}
+        <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08);">
+            <div style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-pen"></i> Edit Materi
+            </div>
+            <form method="POST" action="{{ url_for('admin.update_material', material_id=editing_material.id) }}">
+                <div class="mb-3">
+                    <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 8px; display: block;">📚 Judul Materi</label>
+                    <input type="text" class="form-control" name="title" required value="{{ editing_material.title }}" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); transition: all 0.3s;">
+                </div>
+                <div class="mb-3">
+                    <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 8px; display: block;">🔢 Urutan</label>
+                    <input type="number" min="1" class="form-control" name="order" value="{{ editing_material.order }}" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); transition: all 0.3s;">
+                </div>
+                <div class="mb-3">
+                    <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 8px; display: block;">✍️ Isi Materi</label>
+                    <textarea class="form-control" name="content" rows="9" required style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); transition: all 0.3s;">{{ editing_material.content }}</textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ url_for('admin.course_content', course_id=course.id) }}" style="flex: 1; background: transparent; color: #1a3a5c; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid #1a3a5c; cursor: pointer; text-align: center;">Batal</a>
+                    <button type="submit" style="flex: 1; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 10px 20px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer;">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if editing_evaluation %}
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-question-circle"></i> Edit Evaluasi
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_evaluation', evaluation_id=editing_evaluation.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Pertanyaan</label>
+                        <textarea class="form-control" name="question" rows="4" required>{{ editing_evaluation.question }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipe Evaluasi</label>
+                        <select class="form-select js-question-type" name="question_type">
+                            <option value="multiple_choice" {% if editing_evaluation.question_type == 'multiple_choice' %}selected{% endif %}>Pilihan Ganda</option>
+                            <option value="essay" {% if editing_evaluation.question_type == 'essay' %}selected{% endif %}>Essay</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 js-mcq-fields" {% if editing_evaluation.question_type == 'essay' %}style="display: none;"{% endif %}>
+                        <div class="col-md-6">
+                            <label class="form-label">Pilihan A</label>
+                            <input type="text" class="form-control" name="option_a" value="{{ editing_evaluation.option_a or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Pilihan B</label>
+                            <input type="text" class="form-control" name="option_b" value="{{ editing_evaluation.option_b or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Pilihan C</label>
+                            <input type="text" class="form-control" name="option_c" value="{{ editing_evaluation.option_c or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Pilihan D</label>
+                            <input type="text" class="form-control" name="option_d" value="{{ editing_evaluation.option_d or '' }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Jawaban Benar</label>
+                            <select class="form-select" name="correct_answer">
+                                <option value="">Pilih jawaban benar</option>
+                                <option value="A" {% if editing_evaluation.correct_answer == 'A' %}selected{% endif %}>A</option>
+                                <option value="B" {% if editing_evaluation.correct_answer == 'B' %}selected{% endif %}>B</option>
+                                <option value="C" {% if editing_evaluation.correct_answer == 'C' %}selected{% endif %}>C</option>
+                                <option value="D" {% if editing_evaluation.correct_answer == 'D' %}selected{% endif %}>D</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Urutan</label>
+                        <input type="number" min="1" class="form-control" name="order" value="{{ editing_evaluation.order }}">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="{{ url_for('admin.course_content', course_id=course.id) }}" class="btn btn-secondary w-50">Batal</a>
+                        <button type="submit" class="btn btn-primary w-50">Simpan Evaluasi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-7">
+        <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08);">
+            <div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 16px; border-radius: 12px; margin-bottom: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-book-open"></i> Struktur Course
+            </div>
+            <div style="max-height: 800px; overflow-y: auto; padding-right: 8px;">
+                {% if materials %}
+                    {% for material in materials %}
+                    <div style="border-left: 4px solid #FFD700; background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 5px 15px rgba(26, 58, 92, 0.05); border: 1px solid rgba(26, 58, 92, 0.08);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px;">
+                            <div style="flex-grow: 1;">
+                                <div style="color: #999; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Materi {{ material.order }}</div>
+                                <h5 style="font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin: 0;">{{ material.title }}</h5>
+                                <p style="color: #666; font-size: 0.9rem; margin: 8px 0 0 0; line-height: 1.5;">{{ material.content[:160] }}{% if material.content|length > 160 %}...{% endif %}</p>
+                            </div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+                                <a href="{{ url_for('admin.course_content', course_id=course.id, edit_material=material.id) }}" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; font-size: 12px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form method="POST" action="{{ url_for('admin.delete_material', material_id=material.id) }}" onsubmit="return confirm('Hapus materi ini beserta semua evaluasinya?');" style="margin: 0;">
+                                    <button type="submit" style="background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); color: white; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 12px;">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 2px solid rgba(26, 58, 92, 0.1); padding-top: 14px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <h6 style="margin: 0; color: #1a3a5c; font-weight: 700; font-size: 14px;"><i class="fas fa-tasks"></i> Evaluasi</h6>
+                                <span style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;">{{ material.evaluations|length }} soal</span>
+                            </div>
+
+                            {% for evaluation in material.evaluations|sort(attribute='order') %}
+                            <div style="border: 1px solid rgba(26, 58, 92, 0.1); border-radius: 10px; padding: 12px; margin-bottom: 10px; background: rgba(26, 58, 92, 0.02);">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                                    <div style="flex-grow: 1;">
+                                        <div style="color: #999; font-size: 11px; margin-bottom: 4px;">Soal {{ evaluation.order }} • {% if evaluation.question_type == 'multiple_choice' %}Pilihan Ganda{% else %}Essay{% endif %}</div>
+                                        <div style="font-weight: 600; color: #1a1a1a; font-size: 0.9rem;">{{ evaluation.question }}</div>
+                                        {% if evaluation.question_type == 'multiple_choice' %}
+                                        <div style="color: #666; font-size: 0.8rem; margin-top: 6px; line-height: 1.4;">
+                                            <strong>Opsi:</strong> A. {{ evaluation.option_a }} | B. {{ evaluation.option_b }} | C. {{ evaluation.option_c }} | D. {{ evaluation.option_d }}<br>
+                                            <strong>Jawaban:</strong> {{ evaluation.correct_answer }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <a href="{{ url_for('admin.course_content', course_id=course.id, edit_evaluation=evaluation.id) }}" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; font-size: 11px;">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('admin.delete_evaluation', evaluation_id=evaluation.id) }}" onsubmit="return confirm('Hapus evaluasi ini?');" style="margin: 0;">
+                                            <button type="submit" style="background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); color: white; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 11px;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div style="background: rgba(26, 58, 92, 0.05); border: 1px solid rgba(26, 58, 92, 0.1); border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #666; font-size: 13px;">
+                                <i class="fas fa-info-circle"></i> Belum ada evaluasi untuk materi ini.
+                            </div>
+                            {% endfor %}
+
+                            <div style="border-top: 2px dashed rgba(26, 58, 92, 0.2); margin-top: 12px; padding-top: 12px;">
+                                <h6 style="margin: 0 0 12px 0; color: #1a3a5c; font-weight: 700; font-size: 13px;"><i class="fas fa-plus"></i> Tambah Evaluasi</h6>
+                                <form method="POST" action="{{ url_for('admin.create_evaluation', material_id=material.id) }}">
+                                    <div class="mb-3" style="margin-bottom: 12px;">
+                                        <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">Pertanyaan</label>
+                                        <textarea class="form-control" name="question" rows="2" required placeholder="Tulis pertanyaan evaluasi" style="border-radius: 8px; padding: 10px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;"></textarea>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                                        <div>
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">Tipe</label>
+                                            <select class="form-select js-question-type" name="question_type" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                                <option value="multiple_choice">Pilihan Ganda</option>
+                                                <option value="essay">Essay</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">Urutan</label>
+                                            <input type="number" min="1" class="form-control" name="order" placeholder="Otomatis" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                        </div>
+                                    </div>
+                                    <div class="js-mcq-fields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                                        <div>
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">A</label>
+                                            <input type="text" class="form-control" name="option_a" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                        </div>
+                                        <div>
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">B</label>
+                                            <input type="text" class="form-control" name="option_b" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                        </div>
+                                        <div>
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">C</label>
+                                            <input type="text" class="form-control" name="option_c" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                        </div>
+                                        <div>
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">D</label>
+                                            <input type="text" class="form-control" name="option_d" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                        </div>
+                                        <div style="grid-column: 1 / -1;">
+                                            <label style="font-weight: 700; color: #1a3a5c; margin-bottom: 4px; display: block; font-size: 13px;">Jawaban Benar</label>
+                                            <select class="form-select" name="correct_answer" style="border-radius: 8px; padding: 8px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 13px;">
+                                                <option value="">Pilih</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 13px;">
+                                        <i class="fas fa-plus"></i> Tambah
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-inbox" style="font-size: 48px; color: #1a3a5c; opacity: 0.3; display: block; margin-bottom: 16px;"></i>
+                        <h5 style="color: #1a3a5c; font-weight: 700; margin: 0 0 8px 0;">Belum ada materi</h5>
+                        <p style="color: #666; margin: 0; font-size: 14px;">Tambahkan materi pertama untuk mulai mengisi course ini.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control, .form-select {
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #1a3a5c !important;
+        box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.1) !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.js-question-type').forEach(function(select) {
+        function syncFields() {
+            var wrapper = select.closest('form').querySelector('.js-mcq-fields');
+            if (!wrapper) return;
+            wrapper.style.display = select.value === 'essay' ? 'none' : '';
+        }
+
+        select.addEventListener('change', syncFields);
+        syncFields();
+    });
+</script>
+{% endblock %}

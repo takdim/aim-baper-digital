@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - BAPER Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav style="margin-bottom: 30px;">
+    <ol style="list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; align-items: center;">
+        <li><a href="{{ url_for('dashboard.index') }}" style="color: #1a3a5c; text-decoration: none; font-weight: 600;">📊 Dashboard</a></li>
+        <li style="color: #999;">→</li>
+        <li style="color: #666; font-weight: 500;">{{ course.title }}</li>
+    </ol>
+</nav>
+
+<!-- Course Header -->
+<div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 16px; padding: 40px; margin-bottom: 40px; color: white;">
+    <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; line-height: 1.3;">{{ course.title }}</h1>
+    <p style="font-size: 1.1rem; margin-bottom: 20px; opacity: 0.95;">{{ course.description }}</p>
+    <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+        <div>
+            <small style="opacity: 0.8;">📚 Total Materi</small>
+            <strong style="font-size: 1.3rem;">{{ materials|length }}</strong>
+        </div>
+        <div>
+            <small style="opacity: 0.8;">⏱️ Durasi</small>
+            <strong style="font-size: 1.3rem;">{{ materials|length * 5 }} menit</strong>
+        </div>
+    </div>
+</div>
+
+{% if materials %}
+    <!-- Materials List -->
+    <h2 style="font-size: 1.8rem; font-weight: 700; color: #1a1a1a; margin-bottom: 30px;">
+        <i class="bi bi-book-open"></i> Materi Pembelajaran
+    </h2>
+    
+    <div class="row g-4">
+        {% for material in materials %}
+            <div class="col-lg-6 mb-2">
+                <a href="{{ url_for('course.view_material', material_id=material.id) }}" style="text-decoration: none;">
+                    <div class="material-card" style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; height: 100%;">
+                        <div style="display: flex; align-items: flex-start; gap: 16px;">
+                            <!-- Number Badge -->
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; flex-shrink: 0;">
+                                {{ loop.index }}
+                            </div>
+                            
+                            <!-- Content -->
+                            <div style="flex-grow: 1;">
+                                <h5 style="font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; line-height: 1.4;">{{ material.title }}</h5>
+                                <p style="color: #666; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.5;">{{ material.content[:100] }}{% if material.content|length > 100 %}...{% endif %}</p>
+                                
+                                <!-- Meta Info -->
+                                <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-size: 13px; color: #999;">
+                                    <span>⏱️ ~5 menit</span>
+                                    <span>📝 {{ material.evaluations|length }} Pertanyaan</span>
+                                </div>
+
+                                {% set progress_info = material_progress_map.get(material.id) %}
+                                <div style="margin-top: 14px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                        <span style="font-size: 12px; font-weight: 700; color: #1a3a5c;">Progress Materi</span>
+                                        <span style="font-size: 12px; color: #666;">
+                                            {{ progress_info.progress|round(0)|int }}%
+                                        </span>
+                                    </div>
+                                    <div style="background: rgba(26, 58, 92, 0.1); border-radius: 999px; height: 10px; overflow: hidden;">
+                                        <div style="background: {% if progress_info.completed %}linear-gradient(135deg, #27ae60 0%, #2ecc71 100%){% else %}linear-gradient(135deg, #FFD700 0%, #FFC107 100%){% endif %}; height: 100%; width: {{ progress_info.progress }}%; border-radius: 999px;"></div>
+                                    </div>
+                                    <small style="display: block; margin-top: 6px; color: #666;">
+                                        {% if progress_info.total > 0 %}
+                                            {{ progress_info.answered }}/{{ progress_info.total }} soal terjawab
+                                        {% else %}
+                                            Belum ada evaluasi pada materi ini
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrow -->
+                            <div style="color: #FFD700; font-size: 24px; opacity: 0; transition: all 0.3s;">→</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="background: linear-gradient(135deg, rgba(26, 58, 92, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%); border-radius: 16px; padding: 60px 40px; text-align: center; border: 2px solid rgba(26, 58, 92, 0.1);">
+        <i class="bi bi-inbox" style="font-size: 64px; color: #1a3a5c; opacity: 0.3; display: block; margin-bottom: 20px;"></i>
+        <h4 style="color: #1a3a5c; font-weight: 700; margin-bottom: 12px;">Belum Ada Materi</h4>
+        <p style="color: #666; margin-bottom: 0;">Materi pembelajaran akan segera ditambahkan. Silakan kembali lagi nanti.</p>
+    </div>
+{% endif %}
+
+<!-- Upload Proof Section -->
+<div style="margin-top: 60px; padding-top: 40px; border-top: 2px solid rgba(26, 58, 92, 0.1);">
+    <h2 style="font-size: 1.8rem; font-weight: 700; color: #1a1a1a; margin-bottom: 30px;">
+        <i class="fas fa-images"></i> Bukti Kunjungan & Sertifikat
+    </h2>
+    
+    <div class="row g-4">
+        <!-- Upload Photo Card -->
+        <div class="col-lg-6">
+            <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #1a3a5c; font-size: 24px; font-weight: 800;">
+                        📸
+                    </div>
+                    <div>
+                        <h5 style="margin: 0; font-weight: 700; color: #1a1a1a;">Upload Bukti Kunjungan</h5>
+                        <small style="color: #666;">Foto di perpustakaan</small>
+                    </div>
+                </div>
+
+                {% if visit_proof %}
+                    <div style="background: {% if visit_proof.status == 'approved' %}rgba(34, 197, 94, 0.05){% elif visit_proof.status == 'rejected' %}rgba(239, 68, 68, 0.05){% else %}rgba(59, 130, 246, 0.05){% endif %}; border-left: 4px solid {% if visit_proof.status == 'approved' %}#22C55E{% elif visit_proof.status == 'rejected' %}#EF4444{% else %}#3B82F6{% endif %}; padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                            <strong style="font-size: 20px;">
+                                {% if visit_proof.status == 'approved' %}✅{% elif visit_proof.status == 'rejected' %}❌{% else %}⏳{% endif %}
+                            </strong>
+                            <strong style="color: {% if visit_proof.status == 'approved' %}#22C55E{% elif visit_proof.status == 'rejected' %}#EF4444{% else %}#3B82F6{% endif %};">
+                                {% if visit_proof.status == 'approved' %}Disetujui{% elif visit_proof.status == 'rejected' %}Ditolak{% else %}Menunggu Verifikasi{% endif %}
+                            </strong>
+                        </div>
+                        <small style="color: #666; display: block;">{{ visit_proof.uploaded_at.strftime('%d %b %Y %H:%M') }}</small>
+                    </div>
+                    
+                    <a href="{{ url_for('course.upload_visit_proof', course_id=course.id) }}" style="display: block; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; text-align: center; transition: all 0.3s; border: none; cursor: pointer;">
+                        <i class="fas fa-upload"></i> Ubah Bukti
+                    </a>
+                {% else %}
+                    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Setelah menyelesaikan semua materi, silakan upload foto bukti kunjungan Anda ke perpustakaan.</p>
+                    <a href="{{ url_for('course.upload_visit_proof', course_id=course.id) }}" style="display: block; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color: #1a3a5c; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; text-align: center; transition: all 0.3s; border: none; cursor: pointer;">
+                        <i class="fas fa-upload"></i> Upload Bukti Kunjungan
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Download Certificate Card -->
+        <div class="col-lg-6">
+            {% set cert_enabled = visit_proof and visit_proof.status == 'approved' %}
+            
+            <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 800;">
+                        🎓
+                    </div>
+                    <div>
+                        <h5 style="margin: 0; font-weight: 700; color: #1a1a1a;">Download Sertifikat</h5>
+                        <small style="color: #666;">Setelah diverifikasi admin</small>
+                    </div>
+                </div>
+
+                {% if cert_enabled %}
+                    <div style="background: rgba(34, 197, 94, 0.05); border-left: 4px solid #22C55E; padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                            <strong style="font-size: 20px;">✅</strong>
+                            <strong style="color: #22C55E;">Siap Diunduh</strong>
+                        </div>
+                        <small style="color: #666; display: block;">Bukti kunjungan Anda telah diverifikasi</small>
+                    </div>
+                    
+                    <form method="GET" action="{{ url_for('course.download_certificate', course_id=course.id) }}" style="margin: 0;">
+                        <button type="submit" style="width: 100%; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                            <i class="fas fa-download"></i> Download Sertifikat
+                        </button>
+                    </form>
+                {% else %}
+                    <div style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3B82F6; padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+                        <small style="color: #666; display: block;">
+                            {% if not visit_proof %}
+                                🔒 Upload bukti kunjungan terlebih dahulu
+                            {% elif visit_proof.status == 'rejected' %}
+                                ❌ Bukti ditolak. Silakan upload bukti yang lain
+                            {% else %}
+                                ⏳ Menunggu verifikasi admin
+                            {% endif %}
+                        </small>
+                    </div>
+                    
+                    <button disabled style="width: 100%; background: #ccc; color: #666; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: not-allowed;">
+                        <i class="fas fa-lock"></i> Terkunci
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .material-card {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .material-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(26, 58, 92, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 0;
+        pointer-events: none;
+    }
+    
+    .material-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 40px rgba(26, 58, 92, 0.15) !important;
+    }
+    
+    .material-card:hover::before {
+        left: 0;
+    }
+    
+    .material-card > * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .material-card:hover > div > div:last-child {
+        opacity: 1;
+        transform: translateX(4px);
+    }
+</style>
+{% endblock %}

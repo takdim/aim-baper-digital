@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tambah Course - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1><i class="fas fa-plus-circle"></i> Tambah Course Baru</h1>
+    <p>Buat course atau orientasi baru dalam sistem</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-form"></i> Form Input Data Course
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Judul Course <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" required placeholder="Masukkan judul course">
+                        <small class="text-muted">Contoh: Orientasi Akademik, Pengenalan Kampus, dll</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" placeholder="Masukkan deskripsi course (opsional)"></textarea>
+                        <small class="text-muted">Jelaskan tujuan dan konten dari course ini</small>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.courses_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Batal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Simpan Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Panduan
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">Isi Form Dengan Benar:</h6>
+                <div class="mb-3">
+                    <strong>Judul Course</strong>
+                    <p class="small text-muted">Masukkan nama atau judul dari course/orientasi yang akan dibuat. Harus deskriptif dan jelas.</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Deskripsi</strong>
+                    <p class="small text-muted">Jelaskan apa tujuan course ini, materi apa saja yang akan dicover, dan manfaatnya untuk mahasiswa baru.</p>
+                </div>
+
+                <hr>
+
+                <div class="alert alert-info small">
+                    <strong>Catatan:</strong> Course akan otomatis diaktifkan setelah dibuat. Anda dapat menonaktifkan atau mengeditnya nanti.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

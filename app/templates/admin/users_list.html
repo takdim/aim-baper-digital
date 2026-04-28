@@ -1,0 +1,185 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manajemen User - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="content-header-text">
+        <h1><i class="fas fa-users"></i> Manajemen User</h1>
+        <p>Kelola semua mahasiswa dan admin dalam sistem</p>
+    </div>
+    <a href="{{ url_for('admin.create_user') }}" class="btn btn-success" style="align-self: flex-start; margin-top: 0;">
+        <i class="fas fa-plus-circle"></i> Tambah User
+    </a>
+</div>
+
+<!-- Filter dan Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="" class="row g-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600; font-size: 13px;">🔍 Cari User</label>
+                    <input type="text" name="search" class="form-control" placeholder="Nama, NIM, atau email..." value="{{ search }}" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2);">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600; font-size: 13px;">📋 Filter Role</label>
+                    <select name="role" class="form-select" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2);">
+                        <option value="all" {% if role_filter == 'all' %}selected{% endif %}>Semua Role</option>
+                        <option value="student" {% if role_filter == 'student' %}selected{% endif %}>👨‍🎓 Mahasiswa</option>
+                        <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>👨‍💼 Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100" style="height: 45px; border-radius: 10px;">
+                    <i class="fas fa-search"></i> Cari
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card">
+    <div class="card-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <i class="fas fa-list-ul"></i> <strong>Daftar User</strong>
+            </div>
+            <span class="badge bg-primary" style="font-size: 12px; padding: 8px 12px;">Total: {{ users.total }}</span>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="font-weight: 700;">📌 NIM</th>
+                    <th style="font-weight: 700;">👤 Nama</th>
+                    <th style="font-weight: 700;">🏢 Fakultas</th>
+                    <th style="font-weight: 700;">📧 Email</th>
+                    <th style="font-weight: 700;">🏷️ Role</th>
+                    <th style="font-weight: 700;">✓ Status</th>
+                    <th style="font-weight: 700; text-align: center;">⚙️ Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users.items %}
+                    {% for user in users.items %}
+                    <tr style="transition: all 0.3s;">
+                        <td><strong style="color: #1a3a5c;">{{ user.nim }}</strong></td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.faculty }}</td>
+                        <td>
+                            <span style="color: #666; font-size: 13px;">
+                                {{ user.email or '—' }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user.role == 'admin' %}
+                                <span class="badge" style="background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); padding: 8px 12px; font-size: 11px;">👨‍💼 ADMIN</span>
+                            {% else %}
+                                <span class="badge" style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); padding: 8px 12px; font-size: 11px;">👨‍🎓 STUDENT</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); padding: 8px 12px; font-size: 11px; color: #1a3a5c;">✓ Aktif</span>
+                            {% else %}
+                                <span class="badge bg-secondary" style="padding: 8px 12px; font-size: 11px;">✗ Nonaktif</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="btn-group" role="group" style="gap: 5px;">
+                                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-sm btn-info" title="Edit" style="border-radius: 8px; padding: 8px 12px; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border: none; color: #1a3a5c;">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}" style="border-radius: 8px; padding: 8px 12px; background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); border: none;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content" style="border-radius: 16px; border: none;">
+                                        <div class="modal-header" style="background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); color: white; border: none; border-radius: 16px 16px 0 0;">
+                                            <h5 class="modal-title">⚠️ Konfirmasi Hapus</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Apakah Anda yakin ingin menghapus user <strong>{{ user.name }}</strong>?<br>
+                                            <small class="text-muted">Tindakan ini tidak dapat dibatalkan.</small>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-danger">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="fas fa-inbox" style="font-size: 32px; margin-bottom: 10px;"></i><br>
+                            <strong>Tidak ada data user</strong><br>
+                            <small>Coba ubah filter atau buat user baru</small>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if users.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if users.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.users_list', page=users.prev_num, role=role_filter, search=search) }}" style="border-radius: 8px; margin: 0 4px;">← Sebelumnya</a>
+            </li>
+        {% endif %}
+
+        {% for page_num in users.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == users.page %}
+                    <li class="page-item active">
+                        <span class="page-link" style="border-radius: 8px; margin: 0 4px; background: var(--primary-gradient);">{{ page_num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.users_list', page=page_num, role=role_filter, search=search) }}" style="border-radius: 8px; margin: 0 4px;">{{ page_num }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if users.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.users_list', page=users.next_num, role=role_filter, search=search) }}" style="border-radius: 8px; margin: 0 4px;">Berikutnya →</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<style>
+    .btn-group {
+        display: flex !important;
+    }
+    
+    table tbody tr:hover {
+        background-color: rgba(26, 58, 92, 0.08) !important;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit Course - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="content-header-text">
+        <h1><i class="fas fa-pencil-alt"></i> Edit Course</h1>
+        <p>Perbarui data course: <strong>{{ course.title }}</strong></p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clipboard-list"></i> Form Edit Course
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-4">
+                        <label for="title" class="form-label" style="font-weight: 600; font-size: 14px;">📚 Judul Course <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" required value="{{ course.title }}" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 14px;">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label" style="font-weight: 600; font-size: 14px;">📝 Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" rows="6" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); font-size: 14px; font-family: 'Segoe UI';">{{ course.description or '' }}</textarea>
+                        <small class="text-muted">Jelaskan konten dan tujuan dari course ini</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check" style="background: rgba(26, 58, 92, 0.05); padding: 15px; border-radius: 10px; border: 2px solid rgba(26, 58, 92, 0.15);">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if course.is_active %}checked{% endif %} style="width: 20px; height: 20px; cursor: pointer;">
+                            <label class="form-check-label" for="is_active" style="margin-left: 10px; cursor: pointer; font-weight: 500;">
+                                ✓ Aktifkan Course (mahasiswa dapat mengakses)
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-4" style="background: rgba(26, 58, 92, 0.05); padding: 15px; border-radius: 10px;">
+                        <p style="margin: 0; font-size: 13px;">
+                            <strong style="color: #1a3a5c;">📅 Informasi Timestamp:</strong><br>
+                            <span style="color: #666; font-size: 12px;">
+                                • Dibuat: {{ course.created_at.strftime('%d %B %Y pukul %H:%M') }}<br>
+                                • Diubah: {{ course.updated_at.strftime('%d %B %Y pukul %H:%M') }}<br>
+                                • Admin: {{ course.admin.name if course.admin else '—' }}
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('admin.courses_list') }}" class="btn btn-secondary" style="border-radius: 10px; padding: 12px 20px;">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </a>
+                        <button type="submit" class="btn btn-primary" style="border-radius: 10px; padding: 12px 24px;">
+                            <i class="fas fa-save"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i> Info & Tips
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 style="color: #1a3a5c; font-weight: 700;">📌 ID Course</h6>
+                    <p style="margin: 0; font-size: 14px; color: #666;">#{{ course.id }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 style="color: #1a3a5c; font-weight: 700;">Status</h6>
+                    {% if course.is_active %}
+                        <span class="badge" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); padding: 8px 12px; color: #1a3a5c;">✓ Aktif</span>
+                    {% else %}
+                        <span class="badge bg-secondary" style="padding: 8px 12px;">✗ Nonaktif</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <h6 style="color: #1a3a5c; font-weight: 700;">Kategori</h6>
+                    <p style="margin: 0; font-size: 13px; color: #666;">📚 Course Orientasi</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 style="color: #1a3a5c; font-weight: 700;">Admin Pembuat</h6>
+                    <p style="margin: 0; font-size: 13px; color: #666;">{{ course.admin.name if course.admin else '—' }}</p>
+                </div>
+
+                <hr style="border-color: rgba(26, 58, 92, 0.2);">
+
+                <div class="alert alert-info" style="background: rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.2); border-radius: 10px; border-left: 4px solid #1a3a5c; margin: 0;">
+                    <small style="color: #1a237e; font-weight: 500;">
+                        <i class="fas fa-info-circle"></i> <strong>Tips:</strong><br>
+                        Pastikan judul dan deskripsi sudah sesuai dengan konten course. Course aktif akan tampil untuk mahasiswa.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

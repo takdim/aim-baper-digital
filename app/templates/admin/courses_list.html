@@ -1,0 +1,194 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manajemen Course - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="content-header-text">
+        <h1><i class="fas fa-book-open"></i> Manajemen Course</h1>
+        <p>Kelola semua course dan orientasi dalam sistem</p>
+    </div>
+    <a href="{{ url_for('admin.create_course') }}" class="btn btn-success" style="align-self: flex-start; margin-top: 0;">
+        <i class="fas fa-plus-circle"></i> Tambah Course
+    </a>
+</div>
+
+<!-- Filter dan Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="" class="row g-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600; font-size: 13px;">🔍 Cari Course</label>
+                    <input type="text" name="search" class="form-control" placeholder="Judul course..." value="{{ search }}" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2);">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600; font-size: 13px;">📊 Filter Status</label>
+                    <select name="status" class="form-select" style="border-radius: 10px; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2);">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Semua Status</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>✓ Aktif</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>✗ Nonaktif</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100" style="height: 45px; border-radius: 10px;">
+                    <i class="fas fa-search"></i> Cari
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Courses Table -->
+<div class="card">
+    <div class="card-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <i class="fas fa-list-ul"></i> <strong>Daftar Course</strong>
+            </div>
+            <span class="badge bg-primary" style="font-size: 12px; padding: 8px 12px;">Total: {{ courses.total }}</span>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="font-weight: 700;">📚 Judul Course</th>
+                    <th style="font-weight: 700;">📝 Deskripsi</th>
+                    <th style="font-weight: 700;">📖 Materi</th>
+                    <th style="font-weight: 700;">👨‍💼 Admin</th>
+                    <th style="font-weight: 700;">✓ Status</th>
+                    <th style="font-weight: 700;">📅 Dibuat</th>
+                    <th style="font-weight: 700; text-align: center;">⚙️ Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if courses.items %}
+                    {% for course in courses.items %}
+                    <tr style="transition: all 0.3s;">
+                        <td><strong style="color: #1a3a5c;">{{ course.title }}</strong></td>
+                        <td>
+                            <span style="color: #666; font-size: 13px;">
+                                {% if course.description %}
+                                    {{ course.description[:45] }}{% if course.description|length > 45 %}...{% endif %}
+                                {% else %}
+                                    <em class="text-muted">—</em>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info" style="padding: 8px 12px; font-size: 11px;">
+                                {{ course.materials|length }} materi
+                            </span>
+                        </td>
+                        <td>{{ course.admin.name if course.admin else '—' }}</td>
+                        <td>
+                            {% if course.is_active %}
+                                <span class="badge" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); padding: 8px 12px; font-size: 11px; color: #1a3a5c;">✓ Aktif</span>
+                            {% else %}
+                                <span class="badge bg-secondary" style="padding: 8px 12px; font-size: 11px;">✗ Nonaktif</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span style="color: #666; font-size: 13px;">{{ course.created_at.strftime('%d %b %Y') }}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="btn-group" role="group" style="gap: 5px;">
+                                <a href="{{ url_for('admin.course_content', course_id=course.id) }}" class="btn btn-sm btn-primary" title="Isi Course" style="border-radius: 8px; padding: 8px 12px;">
+                                    <i class="fas fa-layer-group"></i>
+                                </a>
+                                <a href="{{ url_for('admin.edit_course', course_id=course.id) }}" class="btn btn-sm btn-info" title="Edit" style="border-radius: 8px; padding: 8px 12px; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border: none; color: #1a3a5c;">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#deleteModal{{ course.id }}" style="border-radius: 8px; padding: 8px 12px; background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); border: none;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ course.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content" style="border-radius: 16px; border: none;">
+                                        <div class="modal-header" style="background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); color: white; border: none; border-radius: 16px 16px 0 0;">
+                                            <h5 class="modal-title">⚠️ Konfirmasi Hapus</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Apakah Anda yakin ingin menghapus course <strong>{{ course.title }}</strong>?
+                                            <div class="alert alert-warning mt-3 small" style="background: rgba(255, 152, 0, 0.1); border: 1px solid rgba(255, 152, 0, 0.3); border-left: 4px solid #ff9800; border-radius: 8px;">
+                                                <strong>⚠️ Peringatan:</strong> Semua data terkait akan dihapus permanent.
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <form method="POST" action="{{ url_for('admin.delete_course', course_id=course.id) }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-danger">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="fas fa-inbox" style="font-size: 32px; margin-bottom: 10px;"></i><br>
+                            <strong>Tidak ada data course</strong><br>
+                            <small>Coba ubah filter atau buat course baru</small>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if courses.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if courses.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.courses_list', page=courses.prev_num, status=status_filter, search=search) }}" style="border-radius: 8px; margin: 0 4px;">← Sebelumnya</a>
+            </li>
+        {% endif %}
+
+        {% for page_num in courses.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == courses.page %}
+                    <li class="page-item active">
+                        <span class="page-link" style="border-radius: 8px; margin: 0 4px; background: var(--primary-gradient);">{{ page_num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.courses_list', page=page_num, status=status_filter, search=search) }}" style="border-radius: 8px; margin: 0 4px;">{{ page_num }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if courses.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.courses_list', page=courses.next_num, status=status_filter, search=search) }}" style="border-radius: 8px; margin: 0 4px;">Berikutnya →</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<style>
+    .btn-group {
+        display: flex !important;
+    }
+    
+    table tbody tr:hover {
+        background-color: rgba(26, 58, 92, 0.08) !important;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Bantuan - BAPER Digital{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div style="margin-bottom: 40px;">
+            <span style="font-size: 13px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 2px;">
+                ❓ PERTANYAAN UMUM
+            </span>
+            <h1 style="font-size: 2.5rem; font-weight: 800; color: #1a1a1a; margin-top: 10px;">Bantuan & FAQ</h1>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; padding: 0; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); overflow: hidden;">
+            <div class="accordion" id="faqAccordion">
+                <!-- FAQ 1 -->
+                <div class="accordion-item" style="border: none; border-bottom: 2px solid rgba(26, 58, 92, 0.08);">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            ❓ Bagaimana cara mendaftar di BAPER Digital?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555; margin-bottom: 15px;">Untuk mendaftar, ikuti langkah-langkah berikut:</p>
+                            <ol style="color: #555; padding-left: 20px;">
+                                <li style="margin-bottom: 8px;">Klik tombol "Daftar" di halaman utama</li>
+                                <li style="margin-bottom: 8px;">Isi formulir pendaftaran dengan data pribadi Anda</li>
+                                <li style="margin-bottom: 8px;">Masukkan NIM, nama lengkap, dan fakultas</li>
+                                <li style="margin-bottom: 8px;">Buat password yang aman (minimal 6 karakter)</li>
+                                <li style="margin-bottom: 8px;">Klik tombol "Daftar" untuk menyelesaikan registrasi</li>
+                                <li>Anda sekarang dapat login dengan NIM dan password Anda</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 2 -->
+                <div class="accordion-item" style="border: none; border-bottom: 2px solid rgba(26, 58, 92, 0.08);">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            📚 Apa itu orientasi/course?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555;">
+                                Orientasi adalah program pembelajaran interaktif yang dirancang untuk memperkenalkan mahasiswa baru 
+                                dengan layanan dan fasilitas perpustakaan. Setiap orientasi terdiri dari beberapa materi pembelajaran 
+                                dan evaluasi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 3 -->
+                <div class="accordion-item" style="border: none; border-bottom: 2px solid rgba(26, 58, 92, 0.08);">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            ▶️ Bagaimana cara mengambil orientasi?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555; margin-bottom: 15px;">Untuk mengambil orientasi, ikuti langkah berikut:</p>
+                            <ol style="color: #555; padding-left: 20px;">
+                                <li style="margin-bottom: 8px;">Login ke akun Anda</li>
+                                <li style="margin-bottom: 8px;">Pilih orientasi yang ingin Anda ambil dari daftar yang tersedia</li>
+                                <li style="margin-bottom: 8px;">Klik tombol "Ambil Orientasi"</li>
+                                <li>Anda sekarang dapat mulai belajar materi pembelajaran</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 4 -->
+                <div class="accordion-item" style="border: none; border-bottom: 2px solid rgba(26, 58, 92, 0.08);">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            🔐 Bagaimana cara membuat password yang aman?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555; margin-bottom: 15px;">Untuk membuat password yang aman:</p>
+                            <ul style="color: #555; padding-left: 20px;">
+                                <li style="margin-bottom: 8px;">Gunakan minimal 8 karakter</li>
+                                <li style="margin-bottom: 8px;">Gabungkan huruf besar, huruf kecil, angka, dan simbol</li>
+                                <li style="margin-bottom: 8px;">Hindari menggunakan informasi pribadi seperti tanggal lahir atau NIM</li>
+                                <li style="margin-bottom: 8px;">Jangan gunakan kata-kata umum atau mudah ditebak</li>
+                                <li>Simpan password Anda dengan aman dan jangan bagikan kepada orang lain</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 5 -->
+                <div class="accordion-item" style="border: none; border-bottom: 2px solid rgba(26, 58, 92, 0.08);">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            📸 Apa itu bukti kunjungan perpustakaan?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555;">
+                                Bukti kunjungan perpustakaan adalah foto yang menunjukkan Anda telah mengunjungi perpustakaan 
+                                secara fisik. Foto harus menunjukkan identitas Anda dan lokasi perpustakaan. Bukti ini diperlukan 
+                                untuk melengkapi orientasi dan mendapatkan sertifikat.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 6 -->
+                <div class="accordion-item" style="border: none; border-bottom: 2px solid rgba(26, 58, 92, 0.08);">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            🏆 Bagaimana cara mendapatkan sertifikat?
+                        </button>
+                    </h2>
+                    <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555; margin-bottom: 15px;">Untuk mendapatkan sertifikat, lakukan langkah berikut:</p>
+                            <ol style="color: #555; padding-left: 20px;">
+                                <li style="margin-bottom: 8px;">Selesaikan semua materi pembelajaran</li>
+                                <li style="margin-bottom: 8px;">Kerjakan semua evaluasi dengan baik</li>
+                                <li style="margin-bottom: 8px;">Upload bukti kunjungan perpustakaan</li>
+                                <li style="margin-bottom: 8px;">Tunggu verifikasi dari admin</li>
+                                <li>Setelah disetujui, download sertifikat Anda</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 7 -->
+                <div class="accordion-item" style="border: none;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7" style="background: transparent; color: #1a3a5c; font-weight: 700; padding: 20px; border: none;">
+                            🆘 Saya lupa password saya, apa yang harus saya lakukan?
+                        </button>
+                    </h2>
+                    <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" style="background: rgba(26, 58, 92, 0.03); border: none; padding: 20px;">
+                            <p style="color: #555;">
+                                Jika Anda lupa password, silakan hubungi admin perpustakaan melalui kontak yang tersedia di bawah. 
+                                Kami akan membantu Anda mereset password Anda.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Section -->
+        <div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 16px; padding: 40px; margin-top: 30px; color: white;">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 25px;">📞 Hubungi Kami</h3>
+            <p style="margin-bottom: 20px; opacity: 0.95;">Jika Anda memiliki pertanyaan atau butuh bantuan lebih lanjut, silakan hubungi:</p>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 12px; display: flex; align-items: center;">
+                    <span style="margin-right: 12px; font-size: 1.2rem;">📧</span>
+                    <div>
+                        <strong>Email:</strong> 
+                        <a href="mailto:perpustakaan@universitas.ac.id" style="color: #FFD700; text-decoration: none; font-weight: 600;">perpustakaan@universitas.ac.id</a>
+                    </div>
+                </li>
+                <li style="margin-bottom: 12px; display: flex; align-items: center;">
+                    <span style="margin-right: 12px; font-size: 1.2rem;">📱</span>
+                    <div><strong>Telepon:</strong> (021) 123-4567</div>
+                </li>
+                <li style="margin-bottom: 12px; display: flex; align-items: center;">
+                    <span style="margin-right: 12px; font-size: 1.2rem;">📍</span>
+                    <div><strong>Lokasi:</strong> Gedung Perpustakaan, Lantai 3</div>
+                </li>
+                <li style="display: flex; align-items: center;">
+                    <span style="margin-right: 12px; font-size: 1.2rem;">🕐</span>
+                    <div><strong>Jam Kerja:</strong> Senin - Jumat, 08:00 - 17:00</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background: transparent !important;
+        color: #1a3a5c;
+        box-shadow: none;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+</style>
+{% endblock %}

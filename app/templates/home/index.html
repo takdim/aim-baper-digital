@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}BAPER Digital - Selamat Datang{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-5">
+    <div class="col-lg-6">
+        <div class="hero-content">
+            <div style="margin-bottom: 20px;">
+                <span style="font-size: 13px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 2px;">
+                    📚 Orientasi Perpustakaan
+                </span>
+            </div>
+            <h1 class="display-4 fw-bold mb-4" style="font-size: 3.5rem; line-height: 1.2; color: #1a1a1a;">
+                BAPER <span style="color: #1a3a5c; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Digital</span>
+            </h1>
+            <p class="lead text-muted mb-4" style="font-size: 1.2rem; line-height: 1.6;">
+                Sistem orientasi perpustakaan digital yang menyenangkan dan interaktif untuk mahasiswa baru
+            </p>
+            <p class="mb-5" style="font-size: 1rem; color: #555; line-height: 1.8;">
+                Dapatkan pengetahuan lengkap tentang layanan perpustakaan, fasilitas, dan cara menggunakan semua resource yang tersedia untuk mendukung perjalanan akademik Anda.
+            </p>
+            <div class="d-grid gap-3 d-sm-flex">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-lg px-5 gap-3" style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border: none; color: white; font-weight: 600; border-radius: 12px;">
+                            <i class="bi bi-shield-lock"></i> Admin Panel
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-lg px-5 gap-3" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border: none; color: #1a3a5c; font-weight: 600; border-radius: 12px;">
+                            <i class="bi bi-speedometer2"></i> Buka Dashboard
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-lg px-5 gap-3" style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border: none; color: #1a3a5c; font-weight: 600; border-radius: 12px;">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-lg px-5" style="border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 600; background: transparent; border-radius: 12px;">
+                        <i class="bi bi-person-plus"></i> Daftar Baru
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 text-center">
+        <div style="background: linear-gradient(135deg, rgba(26, 58, 92, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%); border-radius: 16px; padding: 40px; min-height: 350px; display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center;">
+                <i class="bi bi-book-open" style="font-size: 120px; color: #1a3a5c; opacity: 0.3;"></i>
+                <p style="margin-top: 20px; font-size: 1.1rem; color: #1a3a5c; font-weight: 600;">BAPER Digital Platform</p>
+                <p style="color: #666; font-size: 0.9rem;">Orientasi Perpustakaan Interaktif</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 16px; padding: 50px; margin: 60px 0; color: white; text-align: center;">
+    <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 20px;">Mengapa BAPER Digital?</h2>
+    <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto; opacity: 0.95;">
+        Kami menyediakan cara yang lebih mudah dan interaktif untuk memahami semua layanan perpustakaan Anda
+    </p>
+</div>
+
+<!-- Features -->
+<h2 class="text-center mb-5" style="font-size: 2.5rem; font-weight: 800; color: #1a1a1a;">Fitur Unggulan</h2>
+    
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="feature-card" style="background: white; border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #1a3a5c;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                📚
+            </div>
+            <h5 class="card-title" style="font-weight: 700; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 12px;">Materi Pembelajaran</h5>
+            <p class="card-text" style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                Akses materi pembelajaran komprehensif tentang layanan dan fasilitas perpustakaan
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="feature-card" style="background: white; border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #FFD700;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #1a3a5c;">
+                ✓
+            </div>
+            <h5 class="card-title" style="font-weight: 700; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 12px;">Evaluasi</h5>
+            <p class="card-text" style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                Uji pemahaman dengan evaluasi dan kuis interaktif untuk setiap materi pembelajaran
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="feature-card" style="background: white; border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #8B4A5C;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                🏆
+            </div>
+            <h5 class="card-title" style="font-weight: 700; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 12px;">Sertifikat</h5>
+            <p class="card-text" style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                Dapatkan sertifikat digital resmi setelah menyelesaikan semua materi pembelajaran
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-4 mb-4">
+        <div class="feature-card" style="background: white; border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #1a3a5c;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                📸
+            </div>
+            <h5 class="card-title" style="font-weight: 700; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 12px;">Bukti Kunjungan</h5>
+            <p class="card-text" style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                Upload foto sebagai bukti kunjungan ke perpustakaan dengan geolokasi otomatis
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="feature-card" style="background: white; border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #FFD700;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #1a3a5c;">
+                📊
+            </div>
+            <h5 class="card-title" style="font-weight: 700; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 12px;">Dashboard</h5>
+            <p class="card-text" style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                Pantau progress pembelajaran Anda secara real-time dengan dashboard personal
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="feature-card" style="background: white; border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #8B4A5C;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, #8B4A5C 0%, #A85A70 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                🎧
+            </div>
+            <h5 class="card-title" style="font-weight: 700; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 12px;">Dukungan</h5>
+            <p class="card-text" style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                Hubungi tim support kami untuk bantuan dan pertanyaan seputar platform
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-content {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .feature-card {
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(26, 58, 92, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 0;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(26, 58, 92, 0.15) !important;
+    }
+    
+    .feature-card:hover::before {
+        left: 0;
+    }
+    
+    .feature-card > * {
+        position: relative;
+        z-index: 1;
+    }
+</style>
+{% endblock %}

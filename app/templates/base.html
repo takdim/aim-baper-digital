@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BAPER Digital - Orientasi Perpustakaan{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%);
+            --secondary-gradient: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+            --dark-bg: #1a3a5c;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #1a1a1a;
+            --text-light: #6c757d;
+        }
+        
+        * {
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 10px 30px rgba(26, 58, 92, 0.2);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .navbar-brand i {
+            font-size: 28px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin: 0 8px;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+            padding: 8px 12px !important;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            color: white !important;
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 10px 0;
+        }
+        
+        .dropdown-item {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 8px;
+            transition: all 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: white !important;
+            transform: translateX(5px);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            opacity: 0.8;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .main-content {
+            min-height: calc(100vh - 56px - 160px);
+            padding: 3rem 0;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            color: white;
+            margin-top: 3rem;
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer p {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .footer small {
+            opacity: 0.8;
+        }
+        
+        .alert {
+            margin-top: 1rem;
+            border: none;
+            border-radius: 12px;
+            border-left: 4px solid;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .alert-danger {
+            background: rgba(245, 87, 108, 0.1);
+            border-left-color: #f5576c;
+            color: #c5192d;
+        }
+        
+        .alert-success {
+            background: rgba(79, 172, 254, 0.1);
+            border-left-color: #4facfe;
+            color: #0056b3;
+        }
+        
+        .alert-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: #667eea;
+            color: #1a237e;
+        }
+        
+        .btn-close {
+            opacity: 0.7;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home.index') }}">
+                <i class="bi bi-book"></i> BAPER Digital
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="bi bi-shield-lock"></i> Admin Panel
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('dashboard.index') }}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ current_user.name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Pengaturan</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('home.about') }}">Tentang</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('home.help') }}">Bantuan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-sm btn-primary text-white ms-2" href="{{ url_for('auth.register') }}">
+                                <i class="bi bi-person-plus"></i> Daftar
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% elif category == 'warning' %}warning{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                            <i class="bi bi-{% if category == 'danger' %}exclamation-circle{% elif category == 'success' %}check-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 BAPER Digital - Orientasi Perpustakaan Digital</p>
+            <small>All rights reserved</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

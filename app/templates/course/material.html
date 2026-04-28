@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ material.title }} - BAPER Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav style="margin-bottom: 30px;">
+    <ol style="list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; align-items: center; font-size: 14px;">
+        <li><a href="{{ url_for('dashboard.index') }}" style="color: #1a3a5c; text-decoration: none; font-weight: 600;">📊 Dashboard</a></li>
+        <li style="color: #999;">→</li>
+        <li><a href="{{ url_for('course.view', course_id=material.course.id) }}" style="color: #1a3a5c; text-decoration: none; font-weight: 600;">{{ material.course.title }}</a></li>
+        <li style="color: #999;">→</li>
+        <li style="color: #666;">{{ material.title }}</li>
+    </ol>
+</nav>
+
+<div class="row gap-4">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Material Header -->
+        <div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 16px; padding: 40px; margin-bottom: 30px; color: white;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 12px; line-height: 1.3;">{{ material.title }}</h1>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; opacity: 0.9;">
+                <span>📚 {{ material.course.title }}</span>
+                <span>•</span>
+                <span>❓ {{ evaluations|length }} Pertanyaan</span>
+                <span>•</span>
+                <span>⏱️ ~5 menit</span>
+            </div>
+        </div>
+        
+        <!-- Material Content -->
+        <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); margin-bottom: 30px;">
+            <div style="color: #333; line-height: 1.8; font-size: 1rem;">
+                {{ material.content | safe }}
+            </div>
+        </div>
+        
+        <!-- Evaluations -->
+        {% if evaluations %}
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-question-circle" style="color: #1a3a5c;"></i> Pertanyaan Evaluasi
+            </h2>
+            
+            {% if active_evaluation %}
+            <form method="POST" action="{{ url_for('course.submit_evaluation', evaluation_id=active_evaluation.id) }}" style="margin-bottom: 30px;">
+                <input type="hidden" name="question_number" value="{{ current_question }}">
+                <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border-left: 4px solid #FFD700; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1a3a5c; font-weight: 800; font-size: 16px; flex-shrink: 0;">
+                                {{ current_question }}
+                            </div>
+                            <h5 style="margin: 0; color: #1a1a1a; font-weight: 700; font-size: 1rem;">{{ active_evaluation.question }}</h5>
+                        </div>
+                        <span style="font-size: 12px; color: #666; background: rgba(26, 58, 92, 0.06); padding: 8px 12px; border-radius: 999px;">
+                            Soal {{ current_question }} dari {{ evaluations|length }}
+                        </span>
+                    </div>
+                    
+                    <div style="background: rgba(26, 58, 92, 0.03); padding: 16px; border-radius: 12px; border: 2px solid rgba(26, 58, 92, 0.1);">
+                        {% if active_evaluation.question_type == 'multiple_choice' %}
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                {% for option_letter, option_text in [('A', active_evaluation.option_a), ('B', active_evaluation.option_b), ('C', active_evaluation.option_c), ('D', active_evaluation.option_d)] %}
+                                    {% if option_text %}
+                                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 10px; border-radius: 8px; transition: all 0.2s; background: white; border: 1px solid rgba(26, 58, 92, 0.15);">
+                                            <input type="radio" name="evaluation_{{ active_evaluation.id }}" value="{{ option_letter }}"
+                                                {% if student_answers.get(active_evaluation.id) == option_letter %}checked{% endif %}
+                                                style="width: 18px; height: 18px; cursor: pointer; accent-color: #1a3a5c;">
+                                            <span style="color: #1a1a1a; font-weight: 500; margin-left: 4px;">{{ option_letter }}. {{ option_text }}</span>
+                                        </label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% elif active_evaluation.question_type == 'essay' %}
+                            <textarea name="evaluation_{{ active_evaluation.id }}" rows="5" placeholder="Tulis jawaban Anda di sini..." style="width: 100%; padding: 12px; border: 2px solid rgba(26, 58, 92, 0.2); border-radius: 10px; font-family: 'Segoe UI', sans-serif; resize: vertical; font-size: 14px;">{{ student_answers.get(active_evaluation.id, '') }}</textarea>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-check-circle"></i> {% if current_question < evaluations|length %}Simpan dan Lanjut{% else %}Simpan Jawaban{% endif %}
+                </button>
+            </form>
+            {% endif %}
+        {% endif %}
+        
+        <!-- Navigation -->
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="{{ url_for('course.view', course_id=material.course.id) }}" style="background: linear-gradient(135deg, rgba(26, 58, 92, 0.1) 0%, rgba(26, 58, 92, 0.05) 100%); color: #1a3a5c; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid rgba(26, 58, 92, 0.2);">
+                ← Kembali ke Materi
+            </a>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Course Info Card -->
+        <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); margin-bottom: 20px; position: sticky; top: 20px;">
+            <h6 style="color: #1a3a5c; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">📚 Course Info</h6>
+            
+            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 2px solid rgba(26, 58, 92, 0.1);">
+                <small style="color: #999; display: block; margin-bottom: 4px;">Course</small>
+                <strong style="color: #1a1a1a; font-size: 0.95rem;">{{ material.course.title }}</strong>
+            </div>
+            
+            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 2px solid rgba(26, 58, 92, 0.1);">
+                <small style="color: #999; display: block; margin-bottom: 4px;">Current Material</small>
+                <strong style="color: #1a1a1a; font-size: 0.95rem;">{{ material.title }}</strong>
+            </div>
+            
+            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 2px solid rgba(26, 58, 92, 0.1);">
+                <small style="color: #999; display: block; margin-bottom: 4px;">Total Materials</small>
+                <strong style="color: #1a1a1a; font-size: 0.95rem;">{{ material.course.materials|length }} materi</strong>
+            </div>
+            
+            <div>
+                <small style="color: #999; display: block; margin-bottom: 4px;">Progress</small>
+                <div style="background: rgba(26, 58, 92, 0.1); border-radius: 8px; height: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); height: 100%; width: {{ material_progress }}%; border-radius: 8px;"></div>
+                </div>
+                <small style="color: #666; display: block; margin-top: 4px;">{{ answered_count }}/{{ evaluations|length }} soal terjawab ({{ material_progress }}%)</small>
+            </div>
+        </div>
+        
+        <!-- Quick Navigation -->
+        <div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 16px; padding: 24px; color: white;">
+            <h6 style="font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">✓ Daftar Materi</h6>
+            <div style="max-height: 300px; overflow-y: auto;">
+                {% for m in material.course.materials %}
+                    <a href="{{ url_for('course.view_material', material_id=m.id) }}" style="display: block; padding: 10px; margin-bottom: 8px; background: {% if m.id == material.id %}rgba(255, 215, 0, 0.3){% else %}rgba(255, 255, 255, 0.1){% endif %}; border-radius: 8px; color: white; text-decoration: none; font-size: 13px; transition: all 0.2s; {% if m.id != material.id %}opacity: 0.8;{% endif %}">
+                        <strong>{{ loop.index }}.</strong> {{ m.title | truncate(25, True) }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

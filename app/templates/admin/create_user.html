@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tambah User - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1><i class="fas fa-user-plus"></i> Tambah User Baru</h1>
+    <p>Buat akun baru untuk mahasiswa atau admin</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-form"></i> Form Input Data User
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label for="nim" class="form-label">NIM <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nim" name="nim" required placeholder="Masukkan NIM">
+                        <small class="text-muted">NIM harus unik dan tidak boleh sama dengan user lain</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Masukkan nama lengkap">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="faculty" class="form-label">Fakultas <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="faculty" name="faculty" required placeholder="Masukkan nama fakultas">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email (opsional)">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="Masukkan password">
+                        <small class="text-muted">Password harus kuat dan minimal 8 karakter</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="">Pilih role</option>
+                            <option value="student">Mahasiswa</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <small class="text-muted">Admin memiliki akses penuh ke sistem</small>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.users_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Batal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Simpan User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Informasi
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">Tipe User:</h6>
+                <div class="mb-3">
+                    <strong>Mahasiswa</strong>
+                    <p class="small text-muted">Akses terbatas ke dashboard dan course</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Admin</strong>
+                    <p class="small text-muted">Akses penuh ke admin panel dan manajemen sistem</p>
+                </div>
+
+                <hr>
+
+                <h6 class="mb-3">Persyaratan:</h6>
+                <ul class="small">
+                    <li>NIM harus unik</li>
+                    <li>Nama tidak boleh kosong</li>
+                    <li>Fakultas harus diisi</li>
+                    <li>Password wajib diisi</li>
+                    <li>Email bersifat opsional</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

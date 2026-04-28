@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Bukti Kunjungan - {{ course.title }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav style="margin-bottom: 30px;">
+    <ol style="list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; align-items: center; font-size: 14px;">
+        <li><a href="{{ url_for('dashboard.index') }}" style="color: #1a3a5c; text-decoration: none; font-weight: 600;">📊 Dashboard</a></li>
+        <li style="color: #999;">→</li>
+        <li><a href="{{ url_for('course.view', course_id=course.id) }}" style="color: #1a3a5c; text-decoration: none; font-weight: 600;">{{ course.title }}</a></li>
+        <li style="color: #999;">→</li>
+        <li style="color: #666;">Upload Bukti</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); border-radius: 16px; padding: 40px; margin-bottom: 30px; color: white;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 12px; line-height: 1.3;">📸 Upload Bukti Kunjungan</h1>
+            <p style="font-size: 1rem; opacity: 0.9; margin: 0;">Unggah foto bukti bahwa Anda telah berkunjung ke perpustakaan</p>
+        </div>
+
+        <!-- Status Info -->
+        {% if existing_proof %}
+            <div style="background: {% if existing_proof.status == 'approved' %}linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%){% elif existing_proof.status == 'rejected' %}linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%){% else %}linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%){% endif %}; border-radius: 16px; padding: 24px; margin-bottom: 30px; border-left: 4px solid {% if existing_proof.status == 'approved' %}#22C55E{% elif existing_proof.status == 'rejected' %}#EF4444{% else %}#3B82F6{% endif %};">
+                <div style="display: flex; gap: 16px; align-items: flex-start;">
+                    <div style="font-size: 32px;">
+                        {% if existing_proof.status == 'approved' %}✅{% elif existing_proof.status == 'rejected' %}❌{% else %}⏳{% endif %}
+                    </div>
+                    <div>
+                        <h5 style="margin: 0 0 8px 0; font-weight: 700; color: #1a1a1a;">
+                            {% if existing_proof.status == 'approved' %}Bukti Disetujui{% elif existing_proof.status == 'rejected' %}Bukti Ditolak{% else %}Bukti Menunggu Verifikasi{% endif %}
+                        </h5>
+                        <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">
+                            {% if existing_proof.status == 'approved' %}
+                                ✅ Bukti kunjungan Anda telah diverifikasi dan disetujui. Anda sekarang dapat mendownload sertifikat.
+                            {% elif existing_proof.status == 'rejected' %}
+                                ❌ Bukti kunjungan Anda ditolak oleh admin.
+                                {% if existing_proof.notes %}<br><strong>Alasan:</strong> {{ existing_proof.notes }}{% endif %}
+                                <br>Silakan upload bukti yang lain.
+                            {% else %}
+                                ⏳ Bukti kunjungan Anda sedang menunggu verifikasi dari admin. Biasanya membutuhkan waktu 1-2 hari kerja.
+                            {% endif %}
+                        </p>
+                        {% if existing_proof.verified_by %}
+                            <small style="color: #999; display: block; margin-top: 8px;">
+                                Diverifikasi oleh: <strong>{{ existing_proof.verifier.name }}</strong> pada {{ existing_proof.verified_at.strftime('%d %b %Y %H:%M') }}
+                            </small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing Image Preview -->
+            <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); margin-bottom: 30px;">
+                <h6 style="color: #1a3a5c; font-weight: 700; margin-bottom: 16px;">📷 Foto Saat Ini</h6>
+                <img src="{{ url_for('static', filename=existing_proof.photo_path) }}" alt="Bukti kunjungan" style="width: 100%; max-height: 400px; border-radius: 12px; object-fit: cover;">
+            </div>
+        {% endif %}
+
+        <!-- Upload Form -->
+        <form method="POST" enctype="multipart/form-data">
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08);">
+                <div style="background: linear-gradient(135deg, rgba(26, 58, 92, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%); border: 2px dashed rgba(26, 58, 92, 0.2); border-radius: 16px; padding: 60px 40px; text-align: center; cursor: pointer; transition: all 0.3s;" id="dropZone">
+                    <input type="file" name="photo" id="photoInput" accept="image/*" required style="display: none;">
+                    
+                    <div style="font-size: 48px; margin-bottom: 16px;">📤</div>
+                    <h5 style="color: #1a3a5c; font-weight: 700; margin: 0 0 8px 0;">Klik untuk memilih atau drag & drop</h5>
+                    <p style="color: #666; margin: 0; font-size: 14px;">Format: JPG, PNG, GIF (Max 5MB)</p>
+                </div>
+                
+                <!-- File Info -->
+                <div id="fileInfo" style="display: none; margin-top: 20px; background: rgba(26, 58, 92, 0.05); padding: 16px; border-radius: 12px;">
+                    <p style="margin: 0; color: #1a3a5c; font-weight: 600;">File dipilih: <span id="fileName"></span></p>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); color: white; padding: 14px; border-radius: 12px; border: none; font-weight: 700; margin-top: 24px; cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-upload"></i> Upload Bukti Kunjungan
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Info Card -->
+        <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(26, 58, 92, 0.1); border: 2px solid rgba(26, 58, 92, 0.08); position: sticky; top: 20px;">
+            <h6 style="color: #1a3a5c; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">📋 Persyaratan</h6>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; gap: 12px;">
+                    <div style="color: #22C55E; font-weight: 700; flex-shrink: 0;">✓</div>
+                    <div>
+                        <small style="color: #999; display: block;">Jenis File</small>
+                        <strong style="color: #1a1a1a; font-size: 0.95rem;">JPG, PNG, GIF</strong>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <div style="color: #22C55E; font-weight: 700; flex-shrink: 0;">✓</div>
+                    <div>
+                        <small style="color: #999; display: block;">Ukuran Max</small>
+                        <strong style="color: #1a1a1a; font-size: 0.95rem;">5 MB</strong>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <div style="color: #22C55E; font-weight: 700; flex-shrink: 0;">✓</div>
+                    <div>
+                        <small style="color: #999; display: block;">Isi Foto</small>
+                        <strong style="color: #1a1a1a; font-size: 0.95rem;">Bukti berada di perpustakaan</strong>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 2px solid rgba(26, 58, 92, 0.1); margin: 16px 0;">
+
+            <h6 style="color: #1a3a5c; font-weight: 700; margin-bottom: 12px; font-size: 12px;">💡 Tips</h6>
+            <ul style="margin: 0; padding-left: 20px; color: #666; font-size: 13px; line-height: 1.6;">
+                <li>Ambil foto dengan pencahayaan yang baik</li>
+                <li>Pastikan wajah atau ID terlihat jelas</li>
+                <li>Sertakan landmark perpustakaan jika memungkinkan</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const photoInput = document.getElementById('photoInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+
+    // Click to select
+    dropZone.addEventListener('click', () => photoInput.click());
+
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '#1a3a5c';
+        dropZone.style.backgroundColor = 'rgba(26, 58, 92, 0.1)';
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = 'rgba(26, 58, 92, 0.2)';
+        dropZone.style.backgroundColor = 'transparent';
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'rgba(26, 58, 92, 0.2)';
+        dropZone.style.backgroundColor = 'transparent';
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            photoInput.files = files;
+            updateFileInfo();
+        }
+    });
+
+    // File input change
+    photoInput.addEventListener('change', updateFileInfo);
+
+    function updateFileInfo() {
+        if (photoInput.files.length > 0) {
+            const file = photoInput.files[0];
+            fileName.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+            fileInfo.style.display = 'block';
+        } else {
+            fileInfo.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

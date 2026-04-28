@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Login - BAPER Digital{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-4">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </h2>
+                <p class="text-center text-muted mb-4">Masuk ke akun Anda</p>
+                
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="mb-3">
+                        <label for="nim" class="form-label">NIM</label>
+                        <input type="text" class="form-control form-control-lg" id="nim" name="nim" 
+                               placeholder="Masukkan NIM Anda" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" 
+                               placeholder="Masukkan password" required>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Ingat saya
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <p class="text-center mb-0">
+                    Belum punya akun? 
+                    <a href="{{ url_for('auth.register') }}" class="text-decoration-none">
+                        Daftar sekarang
+                    </a>
+                </p>
+                <p class="text-center mt-3 mb-0">
+                    Login admin?
+                    <a href="{{ url_for('admin.admin_login') }}" class="text-decoration-none">
+                        Buka halaman admin
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+    }
+    
+    .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+</style>
+{% endblock %}

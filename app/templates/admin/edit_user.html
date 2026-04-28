@@ -1,0 +1,126 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit User - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1><i class="fas fa-user-edit"></i> Edit User</h1>
+    <p>Ubah data user: {{ user.name }}</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-form"></i> Form Edit Data User
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label for="nim" class="form-label">NIM</label>
+                        <input type="text" class="form-control" id="nim" value="{{ user.nim }}" disabled>
+                        <small class="text-muted">NIM tidak bisa diubah</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required value="{{ user.name }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="faculty" class="form-label">Fakultas <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="faculty" name="faculty" required value="{{ user.faculty }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email or '' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password Baru (Kosongkan jika tidak diubah)</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password baru">
+                        <small class="text-muted">Hanya isi jika ingin mengubah password</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="student" {% if user.role == 'student' %}selected{% endif %}>Mahasiswa</option>
+                            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if user.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Aktifkan User
+                            </label>
+                        </div>
+                        <small class="text-muted">Unchecked jika ingin menonaktifkan user</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <p class="text-muted small">
+                            <strong>Dibuat:</strong> {{ user.created_at.strftime('%d %B %Y %H:%M') }}<br>
+                            <strong>Diubah:</strong> {{ user.updated_at.strftime('%d %B %Y %H:%M') }}
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.users_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Batal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-info"></i> Informasi User
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>NIM:</strong><br>
+                    <span class="text-muted">{{ user.nim }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Role:</strong><br>
+                    <span class="badge {% if user.role == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">
+                        {{ user.role | upper }}
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <strong>Status:</strong><br>
+                    {% if user.is_active %}
+                        <span class="badge bg-success">Aktif</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Nonaktif</span>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <strong>Fakultas:</strong><br>
+                    <span class="text-muted">{{ user.faculty }}</span>
+                </div>
+
+                <hr>
+
+                <div class="alert alert-warning small">
+                    <strong>Perhatian!</strong><br>
+                    Hati-hati saat mengubah role user ke admin, karena ini akan memberikan akses penuh ke sistem.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

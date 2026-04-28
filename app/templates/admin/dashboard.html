@@ -1,0 +1,176 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="content-header-text">
+        <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+        <p>Ringkasan lengkap sistem orientasi digital</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-users">
+            <i class="fas fa-users"></i>
+            <h3>{{ stats.total_users }}</h3>
+            <p>Total User</p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-students">
+            <i class="fas fa-user-graduate"></i>
+            <h3>{{ stats.total_students }}</h3>
+            <p>Total Mahasiswa</p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-admins">
+            <i class="fas fa-user-shield"></i>
+            <h3>{{ stats.total_admins }}</h3>
+            <p>Total Admin</p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-courses">
+            <i class="fas fa-book"></i>
+            <h3>{{ stats.total_courses }}</h3>
+            <p>Total Course</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-users"></i> Manajemen User
+            </div>
+            <div class="card-body">
+                <p class="card-text">Kelola semua pengguna sistem (mahasiswa dan admin)</p>
+                <div class="d-flex gap-2 mt-4">
+                    <a href="{{ url_for('admin.users_list') }}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Lihat User
+                    </a>
+                    <a href="{{ url_for('admin.create_user') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah User
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-book-open"></i> Manajemen Course
+            </div>
+            <div class="card-body">
+                <p class="card-text">Kelola semua course dan orientasi dalam sistem</p>
+                <div class="d-flex gap-2 mt-4">
+                    <a href="{{ url_for('admin.courses_list') }}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Lihat Course
+                    </a>
+                    <a href="{{ url_for('admin.create_course') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Section -->
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-chart-bar"></i> Ringkasan Sistem
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="summary-box summary-users">
+                    <strong>Total User</strong><br>
+                    <span>{{ stats.total_users }}</span>
+                    <p>
+                        Mahasiswa: {{ stats.total_students }} | Admin: {{ stats.total_admins }}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="summary-box summary-courses">
+                    <strong>Course Aktif</strong><br>
+                    <span>{{ stats.active_courses }}/{{ stats.total_courses }}</span>
+                    <p>
+                        Total: {{ stats.total_courses }} course
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="summary-box summary-status">
+                    <strong>Status Sistem</strong><br>
+                    <span class="badge bg-success" style="font-size: 14px; padding: 8px 12px;">Online</span>
+                    <p>
+                        Sistem berjalan normal
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .stat-users i { color: #3e6a72; }
+    .stat-students i { color: #b56e6e; }
+    .stat-admins i { color: #c89a4d; }
+    .stat-courses i { color: #5c7f86; }
+
+    .summary-box {
+        padding: 16px 18px;
+        border-radius: 14px;
+        border-left: 4px solid;
+    }
+
+    .summary-box strong {
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    .summary-box span {
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .summary-box p {
+        margin: 8px 0 0 0;
+        font-size: 12px;
+        color: #67737d;
+    }
+
+    .summary-users {
+        background: rgba(75, 127, 131, 0.08);
+        border-left-color: #4b7f83;
+        color: #2c555b;
+    }
+
+    .summary-courses {
+        background: rgba(213, 166, 90, 0.12);
+        border-left-color: #d5a65a;
+        color: #705327;
+    }
+
+    .summary-status {
+        background: rgba(95, 143, 116, 0.1);
+        border-left-color: #5f8f74;
+        color: #436952;
+    }
+</style>
+{% endblock %}
