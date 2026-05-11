@@ -6,7 +6,6 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from pathlib import Path
 import os
-from datetime import datetime
 
 
 def generate_certificate_bytes(
@@ -35,9 +34,11 @@ def generate_certificate_bytes(
         img = Image.open(template_path).convert('RGB')
         draw = ImageDraw.Draw(img)
         
+        base_static_dir = Path(__file__).resolve().parents[1] / 'static'
+
         # Prioritaskan font custom sertifikat dari project
         font_candidates = [
-            str(Path('app/static/font/asteria_font.ttf')),
+            str(base_static_dir / 'font' / 'asteria_font.ttf'),
             "/System/Library/Fonts/Supplemental/Arial.ttf",
             "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
             "/System/Library/Fonts/HelveticaNeue.ttc",
@@ -90,19 +91,28 @@ def generate_certificate_bytes(
 
 
 def find_certificate_template(course_id):
-    """Find certificate template JPEG file"""
-    template_dir = Path('app/static/uploads/certificate_templates')
-    
-    course_template = template_dir / f'course_{course_id}_template.jpg'
-    if course_template.exists():
-        return str(course_template)
-    
-    generic_template = template_dir / 'template.jpg'
-    if generic_template.exists():
-        return str(generic_template)
-    
-    for file in template_dir.glob('*.jpg'):
-        if 'template' in file.name.lower() or 'sertifikat' in file.name.lower():
-            return str(file)
-    
+    """Find certificate template image using paths relative to the app package."""
+    static_dir = Path(__file__).resolve().parents[1] / 'static'
+    template_dir = static_dir / 'uploads' / 'certificate_templates'
+
+    candidates = [
+        template_dir / f'course_{course_id}_template.jpg',
+        template_dir / f'course_{course_id}_template.jpeg',
+        template_dir / f'course_{course_id}_template.png',
+        template_dir / 'template.jpg',
+        template_dir / 'template.jpeg',
+        template_dir / 'template.png',
+        static_dir / 'resource' / 'template_certif_baper.JPEG',
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    if template_dir.exists():
+        for pattern in ('*.jpg', '*.jpeg', '*.JPG', '*.JPEG', '*.png', '*.PNG'):
+            for file in template_dir.glob(pattern):
+                if 'template' in file.name.lower() or 'sertifikat' in file.name.lower():
+                    return str(file)
+
     return None
